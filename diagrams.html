@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Architecture Diagrams - HCMUT Parking</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Inter',sans-serif;background:#0f172a;color:#e2e8f0;padding:32px 24px;min-height:100vh}
+  h1{text-align:center;font-size:26px;font-weight:700;color:#f8fafc;margin-bottom:6px}
+  .subtitle{text-align:center;color:#64748b;font-size:13px;margin-bottom:48px}
+  .section{max-width:1200px;margin:0 auto 64px}
+  .section-title{font-size:16px;font-weight:700;color:#f1f5f9;padding:12px 20px;margin-bottom:28px;background:#1e293b;border-radius:10px;border-left:4px solid #3b82f6}
+  .section-title.green{border-left-color:#22c55e}
+  .section-title.purple{border-left-color:#a855f7}
+  .section-title.amber{border-left-color:#f59e0b}
+  .diagram-box{background:#1e293b;border-radius:16px;border:1px solid #334155;padding:32px;overflow-x:auto}
+  .mermaid{display:flex;justify-content:center}
+  footer{text-align:center;padding:24px;font-size:11px;color:#475569}
+</style>
+</head>
+<body>
+
+<h1>Kien truc He thong Bai do xe Thong minh HCMUT</h1>
+<p class="subtitle">Login System Integration &mdash; Architecture Documentation (Mermaid.js)</p>
+
+<div class="section">
+  <div class="section-title">1. Deployment View &mdash; Bieu do Trien khai</div>
+  <div class="diagram-box"><div id="d1" class="mermaid"></div></div>
+</div>
+
+<div class="section">
+  <div class="section-title green">2. Development View &mdash; Module Dependency Graph</div>
+  <div class="diagram-box"><div id="d2" class="mermaid"></div></div>
+</div>
+
+<div class="section">
+  <div class="section-title purple">3. Authentication Flow &mdash; Sequence Diagram</div>
+  <div class="diagram-box"><div id="d3" class="mermaid"></div></div>
+</div>
+
+<div class="section">
+  <div class="section-title amber">4. Class Diagram &mdash; Components &amp; Data Models</div>
+  <div class="diagram-box"><div id="d4" class="mermaid"></div></div>
+</div>
+
+<footer>&copy; 2026 HCMUT Smart Parking System &mdash; Mermaid.js Architecture Diagrams</footer>
+
+<script>
+// ─── Diagram 1: Deployment View ───────────────────────────────────────────
+document.getElementById('d1').textContent = `graph TB
+    subgraph CLIENT["Client Layer"]
+        PC["May tinh / PC\\nBrowser: Chrome / Firefox / Edge\\nReact 18 SPA - JavaScript Engine"]
+        MB["Thiet bi Di dong\\nBrowser: Safari / Chrome Mobile\\nResponsive TailwindCSS v4"]
+    end
+
+    subgraph HOSTING["Static Hosting Layer"]
+        CDN["Web Server / CDN\\nNginx / Vercel / Netlify\\ndist/index.html + assets/*.js + assets/*.css\\nBuild: Vite 6.3.5 - npm run build"]
+    end
+
+    subgraph EXTERNAL["External Services - Future Integration"]
+        SSO["HCMUT SSO\\nOAuth 2.0 / SAML\\nsso.hcmut.edu.vn\\nHien tai: mock trong AuthContext"]
+        BKPAY["BKPay Gateway\\nREST API / HTTPS\\nNap tien - Thanh toan phi giu xe\\nHien tai: alert placeholder"]
+        DATACORE["HCMUT DATACORE\\nStudent / Lecturer Database\\nREST API\\nHien tai: mockUsers object"]
+        IOT["IoT Sensor Network\\nMQTT / WebSocket\\n20 cam bien Khu A B C D\\nHien tai: setInterval mock 3s"]
+    end
+
+    PC -->|"HTTPS / TLS 1.3 Port 443"| CDN
+    MB -->|"HTTPS / TLS 1.3 Port 443"| CDN
+    CDN -.->|"OAuth2 future"| SSO
+    CDN -.->|"REST API future"| BKPAY
+    CDN -.->|"REST API future"| DATACORE
+    IOT -.->|"WebSocket future"| CDN
+
+    style CLIENT fill:#1e3a5f,stroke:#3b82f6,color:#e2e8f0
+    style HOSTING fill:#1a2a1a,stroke:#22c55e,color:#e2e8f0
+    style EXTERNAL fill:#2d1b4e,stroke:#a855f7,color:#e2e8f0
+    style PC fill:#1e3a5f,stroke:#3b82f6,color:#bfdbfe
+    style MB fill:#1e3a5f,stroke:#3b82f6,color:#bfdbfe
+    style CDN fill:#1a2a1a,stroke:#22c55e,color:#bbf7d0
+    style SSO fill:#2d1b4e,stroke:#a855f7,color:#c4b5fd
+    style BKPAY fill:#1f2937,stroke:#f59e0b,color:#fcd34d
+    style DATACORE fill:#1a2a2a,stroke:#06b6d4,color:#67e8f9
+    style IOT fill:#1a2a2a,stroke:#06b6d4,color:#67e8f9`;
+
+// ─── Diagram 2: Development / Module View ─────────────────────────────────
+document.getElementById('d2').textContent = `graph LR
+    subgraph ENTRY["Entry Point"]
+        IDX["index.html"]
+        MAIN["main.tsx"]
+    end
+    subgraph SHELL["App Shell"]
+        APP["App.tsx"]
+        ROUTES["routes.tsx"]
+    end
+    subgraph STATE["State Layer"]
+        AUTH["AuthContext.tsx\\nuser - login - loginSSO\\nloginGuest - logout - useAuth"]
+    end
+    subgraph GUARD["Route Guard"]
+        PR["ProtectedRoute.tsx\\nnull goto Login\\nadmin goto Admin\\nstaff goto Staff\\nothers goto Student"]
+    end
+    subgraph PAGES["Pages"]
+        LOGIN["Login.tsx\\nSSO - Manual - Guest\\n3 login modes"]
+        STUDENT["StudentDashboard.tsx\\nTong quan - Bai xe\\nLich su - Thanh toan"]
+        STAFF["StaffDashboard.tsx\\nGiam sat - Vao bai - Ra bai"]
+        ADMIN["AdminDashboard.tsx\\nTong quan - Users\\nSensors - Gia - Bao cao"]
+    end
+    subgraph SHARED["Shared Components"]
+        PM["ParkingMap.tsx\\n100 o do xe 4 khu A-D\\nInterval 3s real-time mock"]
+        TH["TransactionHistory.tsx\\n20 giao dich mock\\nFilter all entry exit payment"]
+        UI["components/ui\\n48 ShadCN components\\nRadix UI primitives"]
+    end
+
+    IDX --> MAIN --> APP
+    APP --> AUTH
+    APP --> ROUTES
+    ROUTES --> LOGIN
+    ROUTES --> PR
+    PR --> AUTH
+    PR --> STUDENT
+    PR --> STAFF
+    PR --> ADMIN
+    LOGIN --> AUTH
+    STUDENT --> AUTH
+    STUDENT --> PM
+    STUDENT --> TH
+    STUDENT --> UI
+    STAFF --> AUTH
+    STAFF --> PM
+    STAFF --> UI
+    ADMIN --> AUTH
+    ADMIN --> PM
+    ADMIN --> TH
+    ADMIN --> UI
+
+    style STATE fill:#2d1b4e,stroke:#a855f7,color:#e2e8f0
+    style PAGES fill:#1a2a1a,stroke:#22c55e,color:#e2e8f0
+    style SHARED fill:#1f2937,stroke:#f59e0b,color:#e2e8f0
+    style GUARD fill:#1e3a5f,stroke:#3b82f6,color:#e2e8f0
+    style ENTRY fill:#1a2a2a,stroke:#06b6d4,color:#e2e8f0
+    style SHELL fill:#1a2a2a,stroke:#06b6d4,color:#e2e8f0`;
+
+// ─── Diagram 3: Authentication Flow ───────────────────────────────────────
+document.getElementById('d3').textContent = `sequenceDiagram
+    actor User as Nguoi dung
+    participant Login as Login.tsx
+    participant Auth as AuthContext
+    participant Router as react-router
+    participant PR as ProtectedRoute
+    participant DB as Dashboard
+
+    User->>Login: Mo ung dung GET /
+    Note over Login: Hien thi 3 tab SSO / Manual / Guest
+
+    alt SSO Login
+        User->>Login: Nhap email @hcmut.edu.vn
+        Login->>Auth: loginSSO(email) delay 1000ms
+        Auth-->>Login: setUser(foundUser)
+    else Manual Login
+        User->>Login: Nhap email + password
+        Login->>Auth: login(email, password) delay 800ms
+        Auth-->>Login: setUser(user) hoac throw Error
+    else Guest Login
+        User->>Login: Nhap ten + so dien thoai
+        Login->>Auth: loginGuest(name, phone) delay 500ms
+        Auth-->>Login: setUser(guestUser)
+    end
+
+    Login->>Router: navigate('/dashboard')
+    Router->>PR: Render /dashboard route
+    PR->>Auth: useAuth() - doc user.role
+
+    alt role la admin
+        PR->>DB: Render AdminDashboard
+    else role la staff
+        PR->>DB: Render StaffDashboard
+    else student hoac lecturer hoac guest
+        PR->>DB: Render StudentDashboard
+    else user la null
+        PR->>Router: Navigate to='/' redirect
+    end
+
+    Note over DB: Logout: Auth.logout() -> setUser(null) -> navigate('/')`;
+
+// ─── Diagram 4: Class Diagram ──────────────────────────────────────────────
+document.getElementById('d4').textContent = `classDiagram
+    class AuthContext {
+        +user : User
+        +login(email, password) void
+        +loginSSO(email) void
+        +loginGuest(name, phone) void
+        +logout() void
+        +useAuth() AuthContextType
+    }
+    class User {
+        +id : string
+        +name : string
+        +email : string
+        +role : UserRole
+        +studentId : string
+        +balance : number
+    }
+    class UserRole {
+        <<enumeration>>
+        student
+        lecturer
+        staff
+        admin
+        guest
+    }
+    class Login {
+        -mode : string
+        -email : string
+        -password : string
+        -guestName : string
+        -guestPhone : string
+        -error : string
+        -loading : boolean
+        +handleSSOLogin(e) void
+        +handleManualLogin(e) void
+        +handleGuestLogin(e) void
+    }
+    class ProtectedRoute {
+        +render() JSX
+    }
+    class StudentDashboard {
+        -activeTab : string
+        -paymentAmount : string
+        +handleLogout() void
+        +handlePayment() void
+    }
+    class StaffDashboard {
+        -activeTab : string
+        -vehicleNumber : string
+        -selectedSpot : ParkingSpot
+        -searchQuery : string
+        +handleLogout() void
+        +handleEntry() void
+        +handleExit() void
+        +handleSpotClick(spot) void
+    }
+    class AdminDashboard {
+        -activeTab : string
+        -sensors : List
+        +handleLogout() void
+    }
+    class ParkingMap {
+        -spots : List
+        -selectedZone : string
+        +generateMockSpots() List
+    }
+    class ParkingSpot {
+        +id : string
+        +zone : string
+        +occupied : boolean
+        +vehicle : string
+        +entryTime : Date
+    }
+    class TransactionHistory {
+        -transactions : List
+        -filter : string
+        +formatDuration(minutes) string
+        +formatCurrency(amount) string
+        +getTypeIcon(type) JSX
+        +getTypeLabel(type) string
+        +getStatusColor(status) string
+    }
+    class Transaction {
+        +id : string
+        +type : string
+        +amount : number
+        +timestamp : Date
+        +vehicle : string
+        +zone : string
+        +duration : number
+        +status : string
+    }
+    class Sensor {
+        +id : string
+        +zone : string
+        +spot : string
+        +status : string
+        +lastUpdate : Date
+        +battery : number
+    }
+    class VehicleEntry {
+        +id : string
+        +vehicle : string
+        +zone : string
+        +spot : string
+        +entryTime : Date
+        +owner : string
+        +type : string
+    }
+    AuthContext --> User : manages
+    User --> UserRole : has role
+    Login --> AuthContext : uses
+    ProtectedRoute --> AuthContext : reads user
+    ProtectedRoute --> StudentDashboard : renders
+    ProtectedRoute --> StaffDashboard : renders
+    ProtectedRoute --> AdminDashboard : renders
+    StudentDashboard --> AuthContext : reads user
+    StudentDashboard --> ParkingMap : uses
+    StudentDashboard --> TransactionHistory : uses
+    StaffDashboard --> AuthContext : reads user
+    StaffDashboard --> ParkingMap : uses
+    AdminDashboard --> AuthContext : reads user
+    AdminDashboard --> ParkingMap : uses
+    AdminDashboard --> TransactionHistory : uses
+    AdminDashboard --> Sensor : manages
+    ParkingMap --> ParkingSpot : renders
+    TransactionHistory --> Transaction : displays`;
+
+// ─── Initialize Mermaid ────────────────────────────────────────────────────
+mermaid.initialize({
+  startOnLoad: true,
+  theme: 'dark',
+  themeVariables: {
+    primaryColor: '#1e293b',
+    primaryTextColor: '#e2e8f0',
+    primaryBorderColor: '#3b82f6',
+    lineColor: '#64748b',
+    secondaryColor: '#0f172a',
+    tertiaryColor: '#0f172a',
+    background: '#0f172a',
+    mainBkg: '#1e293b',
+    nodeBorder: '#334155',
+    clusterBkg: '#0f172a',
+    titleColor: '#f8fafc',
+    edgeLabelBackground: '#1e293b',
+    actorBkg: '#1e293b',
+    actorBorder: '#3b82f6',
+    actorTextColor: '#e2e8f0',
+    signalColor: '#94a3b8',
+    signalTextColor: '#e2e8f0',
+    labelBoxBkgColor: '#1e293b',
+    labelBoxBorderColor: '#334155',
+    labelTextColor: '#e2e8f0',
+    loopTextColor: '#e2e8f0',
+    noteBkgColor: '#2d1b4e',
+    noteTextColor: '#e2e8f0',
+    activationBkgColor: '#1e3a5f',
+    fontFamily: 'Inter, sans-serif'
+  },
+  flowchart: { curve: 'basis', padding: 20 },
+  sequence: { actorMargin: 80, boxMargin: 10, mirrorActors: false }
+});
+</script>
+</body>
+</html>
