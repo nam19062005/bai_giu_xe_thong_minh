@@ -1,0 +1,42 @@
+/* style.css */
+:root {
+    --blue: #034EA2;
+    --gold: #F2A900;
+    --gray: #f3f4f6;
+}
+
+body { font-family: sans-serif; margin: 0; background: var(--gray); color: #333; }
+
+/* Bố cục cơ bản */
+.flex { display: flex; }
+.j-center { justify-content: center; }
+.a-center { align-items: center; }
+.col { flex-direction: column; }
+.p-20 { padding: 20px; }
+
+/* Header */
+nav { background: var(--blue); color: white; padding: 15px 20px; display: flex; justify-content: space-between; }
+.nav-admin { background: #1f2937; }
+
+/* Thẻ Card */
+.card { background: white; padding: 20px; border-radius: 8px; shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 15px; border-top: 4px solid var(--blue); }
+.card-gold { border-top-color: var(--gold); }
+
+/* Nút bấm */
+.btn { 
+    display: block; width: 100%; padding: 12px; border: none; border-radius: 6px; 
+    cursor: pointer; text-decoration: none; text-align: center; font-weight: bold; margin-bottom: 10px;
+}
+.btn-blue { background: var(--blue); color: white; }
+.btn-gold { background: var(--gold); color: white; }
+.btn-gray { background: #e5e7eb; color: #374151; }
+
+/* Bảng */
+table { width: 100%; border-collapse: collapse; background: white; }
+th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+
+/* Nền đăng nhập */
+.bg-login { 
+    height: 100vh; background: linear-gradient(rgba(3,78,162,0.8), rgba(3,78,162,0.8)), url('https://via.placeholder.com/1200x800');
+    background-size: cover; display: flex; align-items: center; justify-content: center;
+}
